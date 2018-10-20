@@ -10,16 +10,18 @@ class Game{
 		int width = 80;
 		int border_color = 35;
 		int block_color = 45;
-		int font_color = 35;
+		// int font_color = 35;
+		int font_color = 0;
 	//funkcje
 		void menu();
 		void game_setup();
-		void game_paly();
+		void game_start(int game_start = 1); // 1 - gracz vs graczl; 2 - gracz vs komputer
 		void game_end();
 		void draw_title();
 		void draw_o(int x, int y);
 		void draw_x(int x, int y);
-		void draw_console(int x, int y, std::string title = "Untitled", std::string opc = "Opcja: ", std::string error = "xd");
+		void draw_console(int x, int y, std::string title = "Untitled", std::string opc = "Opcja: ", std::string error = "");
+		void gmae_pvp();
 	public:
 		Game();
 		Game(int x, int y);
@@ -54,18 +56,25 @@ void Game::menu(){
 			std::cout << "\033[" << x + menu_top + this->padding + 2 /*pozycja od góry*/ << ";" << y + 1 + this->padding << "H" << "(3) - Statystyki \t\t[Wkrótce]";
 			std::cout << "\033[" << x + menu_top + this->padding + 4 /*pozycja od góry*/ << ";" << y + 1 + this->padding << "H" << "(0) - Wyjdź \t\t\t[Wkrótce]";
 		//lewa i prawa scianka
+			std::cout << "\033[1;" << this->border_color << "m";
 			for(int i = 0; i < opc_height; i++){
 				std::cout << "\033[" << (this->x + menu_top + i) << ";" << (this->y) << "H" << "\u2551";
 				std::cout << "\033[" << (this->x + menu_top + i) << ";" << (this->y + this->width) << "H" << "\u2551";
 			}
 
 	//konsola
-		this->draw_console(menu_top + this->x + opc_height, this->y);
+		this->draw_console(menu_top + this->x + opc_height, this->y, "Menu", "Opcja: ");
 
 	//pobirz odpowiedz
 	std::cin >> usr_response;
 	while( !std::cin.good() || usr_response  > 3 || usr_response < 0){
-
+		this->draw_console(menu_top + this->x + opc_height, this->y, "Menu", "Opcja: " ,"\033[1;31mError: \033[" + std::to_string(this->font_color) + "mTo musi być liczba z zakresu 0-3!");
+		std::cin.clear();
+		std::cin.ignore(1024,'\n');
+		std::cin >> usr_response;
+	}
+	switch(usr_response){
+		case 1: this->game_start(1);
 	}
 	
 }
@@ -155,7 +164,7 @@ void Game::draw_console(int x, int y, std::string title, std::string opc, std::s
 
 	int height = 5;
 	//color
-		std::cout << "\033[1;" << this->font_color << "m";
+		std::cout << "\033[1;" << this->border_color << "m";
 	//rysuje gore i dol
 		for(int i = 1; i < this->width; i++){
 			std::cout << "\033[" << x << ";" << y+i << "H\u2550"; 
@@ -181,7 +190,7 @@ void Game::draw_console(int x, int y, std::string title, std::string opc, std::s
 		std::cout << "\033[" << x+3 << ";" << y+i << "H ";
 		std::cout << "\033[" << x+5 << ";" << y+i << "H ";
 	}
-	std::cout << "\033[1;" << this->font_color << "m";
+	std::cout << "\033[1;" << this->border_color << "m";
 	//rysuje separatory
 		for(int i = 1; i < this->width; i++){
 			std::cout << "\033[" << x+2 << ";" << y+i << "H\u2508";	
@@ -191,6 +200,9 @@ void Game::draw_console(int x, int y, std::string title, std::string opc, std::s
 		std::cout << "\033[1;" << this->font_color << "m\033[" << x+1 << ";" << y+this->padding+1 << "H" << title;
 		std::cout << "\033[1;" << this->font_color << "m\033[" << x+5 << ";" << y+this->padding+1 << "H" << error;
 		std::cout << "\033[1;" << this->font_color << "m\033[" << x+3 << ";" << y+this->padding+1 << "H" << opc;
+}
+void Game::game_start(int opc){
+
 }
 
 

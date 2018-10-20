@@ -11,7 +11,7 @@
 
 ## Menu
 
-* [ ] Gracz vs Gracz
-* [ ] Gracz vs PC
-* [ ] Statystyki
-* [ ] Wyjdź
+* Gracz vs Gracz
+* Gracz vs PC
+* Statystyki
+* Wyjdź
