@@ -1,137 +1,179 @@
 #include <iostream>
 
+using namespace std;
+
 class Game{
+
 	private:
-	//zmienne
-		int x = 1;
-		int y = 1;
-		int char_max_height_width = 5;
-		int width = 80;
-		int border_color = 35;
-		int block_color = 45;
-		// int font_color = 35;
-		int font_color = 0;
-		int board_width_heigth = 26;
-		int menu_top = this->char_max_height_width + 7 + this->x;
-	//funkcje
-		void menu();
-		void game_setup();
-		void game_start(int game_start = 1); // 1 - gracz vs graczl; 2 - gracz vs komputer
-		void game_end();
-		void draw_title();
-		void draw_o(int x, int y);
-		void draw_x(int x, int y);
-		void draw_console(int x, int y, std::string title = "Untitled", std::string opc = "Opcja: ", std::string error = "");
-		void draw_board();
-		void draw_footer(int x, int y, int inner_width = 53, int inner_height = 11);
-		void gmae_pvp();
+		// zmienne
+			int x;
+			int y;
+			int menu_x;
+			int menu_y;
+			int console_x;
+			int console_y;
+			int width = 81;
+			int height = 35;
+			// int width = 3;
+			// int height = 3;
+			//colors
+			int font_color = 0;
+			int border_color = 35;
+			int block_color = 45;
+			int focus_color = 33;
+			// int bg_color = 43;
+		// metody
+			void draw_board();
+			void draw_x(int x, int y);
+			void draw_o(int x, int y);
+			void menu();
+			void clear_menu();
+			void clear_input();
+			int get_usr_inp(int max = 3, int min = 0, string title = "Menu", string opc = "Opcja", string error = "");
+			void dewa_console(string title = "Menu", string opc = "Opcja", string error = "");
+			void game_setup(int typ); // 0 - gracz vs gracz; 1 - gracz vs pc
+			void game_start(int typ, int first = 0); // 0 - losowo; 1 - o; 2 - x;
+			void show_stat();
 	public:
-		Game();
-		Game(int x, int y);
+		Game(int x = 1, int y = 1);
+		~Game();
 
 };
-Game::Game(){
-	this->menu();
-}
 Game::Game(int x, int y){
 	this->x = x;
 	this->y = y;
-	this->menu();	
+	this->menu_x = x + 9;
+	this->menu_y = y + 27;
+	this->console_x = x + 17;
+	this->console_y = y + 27;
+
+	this->draw_board();
+	this->menu();
 }
-void Game::menu(){
-	system("clear");
-	int opc_inner_height = 5;
-	int opc_height = opc_inner_height+2;
-	std::cout << "\033[2J\033[" << this->menu_top<< ";" << this->y << "H";
-	int usr_response;
+Game::~Game(){
+	// system("clear");
+	// cout << "\033[1;1H\033[0m";
+}
+void Game::draw_board(){
+	//czysci plansze
+		system("clear");
+		cout << "\033[1;1H\033[0m";
 
-	//tytul
-		this->draw_title();
+	//rysuje obramowke / wewnetrzne sciany
+		cout << "\033[0m\033[" << this->border_color << "m";
+		//poziome
+		for(int i = 0; i < this->width; i++){
+			cout << "\033[" << this->x << ";" << this->y + i << "H\u2550";
+			cout << "\033[" << this->x + this->height - 1 << ";" << this->y + i << "H\u2550";
 
-	//menu
-		//color
-			std::cout << "\033[0m";
-			std::cout << "\033[1;" << this->font_color << "m";
-		//opcje
-			std::cout << "\033[" << this->menu_top + 1 /*pozycja od góry*/ << ";" << y + 2 + this->board_width_heigth << "H" << "(1) - Gracz vs Gracz \t\t[Wkrótce]";
-			std::cout << "\033[" << this->menu_top + 2 /*pozycja od góry*/ << ";" << y + 2 + this->board_width_heigth << "H" << "(2) - Gracz vs PC \t\t\t[Wkrótce]";
-			std::cout << "\033[" << this->menu_top + 3 /*pozycja od góry*/ << ";" << y + 2 + this->board_width_heigth << "H" << "(3) - Statystyki (Gracz vs PC) \t[Wkrótce]";
-			std::cout << "\033[" << this->menu_top + 5 /*pozycja od góry*/ << ";" << y + 2 + this->board_width_heigth << "H" << "(0) - Wyjdź \t\t\t[Wkrótce]";
-		//lewa i prawa scianka
-			std::cout << "\033[1;" << this->border_color << "m";
-			for(int i = 0; i < opc_height; i++){
-				std::cout << "\033[" << (this->menu_top + i) << ";" << (this->y) << "H" << "\u2551";
-				std::cout << "\033[" << (this->menu_top + i) << ";" << (this->y + this->width) << "H" << "\u2551";
+			cout << "\033[" << this->x + 8 << ";" << this->y + i << "H\u2550";
+
+			if(i > 25){
+				cout << "\033[" << this->x + 16 << ";" << this->y + i << "H\u2550";
+				cout << "\033[" << this->x + 22 << ";" << this->y + i << "H\u2550";
+				//rysuje separatory inputa
+				cout << "\033[" << this->x + 18 << ";" << this->y + i << "H\u254C";
+				cout << "\033[" << this->x + 20 << ";" << this->y + i << "H\u254C";
 			}
-	
-	//plansza
-		this->draw_board();
+		}
+		//pionowe
+		for(int i = 0; i < this->height; i++){
+			cout << "\033[" << this->x + i << ";" << this->y << "H\u2551";
+			cout << "\033[" << this->x + i << ";" << this->y + this->width - 1 << "H\u2551";
+			if(i > 7){
+				cout << "\033[" << this->x + i << ";" << this->y + 26 << "H\u2551";
+			}
+		}
+
+	//rysuje rogi obramowki / skrzyzowania
+		cout << "\033[" << this->x << ";" << this->y << "H\u2554";											//tl
+		cout << "\033[" << this->x << ";" << this->y + this->width - 1 << "H\u2557";						//tr
+		cout << "\033[" << this->x + this->height - 1 << ";" << this->y << "H\u255A";						//bl
+		cout << "\033[" << this->x + this->height - 1 << ";" << this->y + this->width - 1 << "H\u255D";		//br
+		cout << "\033[" << this->x + 8 << ";" << this->y << "H\u2560";										//pod title l
+		cout << "\033[" << this->x + 8 << ";" << this->y + this->width-1 << "H\u2563";						//pod title r
+		cout << "\033[" << this->x + 16 << ";" << this->y + 26 << "H\u2560";								//pod menu l
+		cout << "\033[" << this->x + 16 << ";" << this->y + this->width-1 << "H\u2563";						//pod menu r
+		cout << "\033[" << this->x + 22 << ";" << this->y + 26 << "H\u2560";								//nad stopka l
+		cout << "\033[" << this->x + 22 << ";" << this->y + this->width-1 << "H\u2563";						//nad stopka r
+		cout << "\033[" << this->x + 8 << ";" << this->y + 26 << "H\u2566";									//prawa od o:x t
+		cout << "\033[" << this->x + this->height - 1 << ";" << this->y + 26 << "H\u2569";					//prawa od o:x b
+
+
+	//rysuje sciany glownej planszy
+		for(int i = 0; i < 23; i++){
+			//pionowe
+				cout << "\033[" << this->x + 10 + i << ";" << this->y + 9 << "H\u2502";
+				cout << "\033[" << this->x + 10 + i << ";" << this->y + 17 << "H\u2502";
+			//poziome
+				cout << "\033[" << this->x + 17 << ";" << this->y + 2 + i << "H\u2500";
+				cout << "\033[" << this->x + 25 << ";" << this->y + 2 + i << "H\u2500";
+		}
+		//skrzyzowania
+			cout << "\033[" << this->x + 17 << ";" << this->y + 9 << "H\u253c";		//tl
+			cout << "\033[" << this->x + 17 << ";" << this->y + 17 << "H\u253c";	//tr
+			cout << "\033[" << this->x + 25 << ";" << this->y + 9 << "H\u253c";		//bl
+			cout << "\033[" << this->x + 25 << ";" << this->y + 17 << "H\u253c";	//br
+
+	// 1 2 3 / a b c
+		cout << "\033[0m\033[" << this->font_color << "m";
+
+		cout << "\033[" << this->x + 9 << ";" << this->y + 5 << "HA";
+		cout << "\033[" << this->x + 33 << ";" << this->y + 5 << "HA";
+		cout << "\033[" << this->x + 9 << ";" << this->y + 13 << "HB";
+		cout << "\033[" << this->x + 33 << ";" << this->y + 13 << "HB";
+		cout << "\033[" << this->x + 9 << ";" << this->y + 21 << "HC";
+		cout << "\033[" << this->x + 33 << ";" << this->y + 21 << "HC";
+
+		cout << "\033[" << this->x + 13 << ";" << this->y + 1 << "H1";
+		cout << "\033[" << this->x + 13 << ";" << this->y + 25 << "H1";
+		cout << "\033[" << this->x + 21 << ";" << this->y + 1 << "H2";
+		cout << "\033[" << this->x + 21 << ";" << this->y + 25 << "H2";
+		cout << "\033[" << this->x + 29 << ";" << this->y + 1 << "H3";
+		cout << "\033[" << this->x + 29 << ";" << this->y + 25 << "H3";
+
+	//title
+		cout << "\033[0m\033[" << this->block_color << "m";
+		this->draw_o(this->x + 2, this->y + 1 + 17);
+		this->draw_x(this->x + 2, this->y + 1 + 3*17 + 5 + 1);
+		// i
+		cout << "\033[" << this->x + 2 << ";" << this->y + 1 + 2*17 + 5 << "H ";
+		cout << "\033[" << this->x + 4 << ";" << this->y + 1 + 2*17 + 5 << "H ";
+		cout << "\033[" << this->x + 5 << ";" << this->y + 1 + 2*17 + 5 << "H ";
+		cout << "\033[" << this->x + 6 << ";" << this->y + 1 + 2*17 + 5 << "H ";
 
 	//footer
-		this->draw_footer(this->menu_top + 8 + 6, 3*this->char_max_height_width + 14);
-
-	//konsola
-		this->draw_console(menu_top + opc_height, this->y + this->board_width_heigth, "Menu", "Opcja: ");
-
-	//pobirz odpowiedz
-		std::cin >> usr_response;
-		while( !std::cin.good() || usr_response  > 3 || usr_response < 0){
-			this->draw_console(menu_top + opc_height, this->y + this->board_width_heigth, "Menu", "Opcja: " ,"\033[1;31mError: \033[" + std::to_string(this->font_color) + "mTo musi być liczba z zakresu 0-3!");
-			std::cin.clear();
-			std::cin.ignore(1024,'\n');
-			std::cin >> usr_response;
+		cout << "\033[0m\033[" << this->block_color - 10 << "m";
+		for(int i = 0; i < 11; i++){
+			for(int j = 0; j < 53; j++){
+				cout << "\033[" << this->x + 23 + i << ";" << this->y + 27 + j << "H\u2571";
+			}
 		}
-		switch(usr_response){
-			case 1: this->game_start(1);
+		for(int i = 0; i < 3; i++){
+			for(int j = 0; j < 23; j++){
+				cout << "\033[" << this->x + 27 + i << ";" << this->y + 42 + j << "H ";
+			}
 		}
-	
+		cout << "\033[" << this->x + 28 << ";" << this->y + 43 << "HKrzysztof Kukiz \u00A92018";
+
 }
-void Game::draw_title(){
-	
-	int innerHeight = char_max_height_width + 4;
-	int i_y_posytion = this->y + (this->width / 2);
-	int char_between_space = (this->width - 2 - (2 * this->char_max_height_width))/4;
+void Game::draw_x(int x, int y){
 
-	//ustawnienie koloru obramowania
-		std::cout << "\033[" << this->border_color << ";1m";
+	std::cout << "\033[" << x+0 << ";" << y+0 << "H ";
+	std::cout << "\033[" << x+0 << ";" << y+4 << "H ";
 
-	//narysowanie gurnej i dolnej lini
-		for(int i = 0; i < width; i++){
-			std::cout << "\033[" << (this->x) << ";" << (this->y + i) << "H" << "\u2550";
-			std::cout << "\033[" << (this->x + innerHeight -1) << ";" << (this->y + i) << "H" << "\u2550";
-		}
+	std::cout << "\033[" << x+1 << ";" << y+1 << "H ";
+	std::cout << "\033[" << x+1 << ";" << y+3 << "H ";
 
-	//narysowanie lewo i prawo
-		for(int i = 0; i < innerHeight; i++){
-			std::cout << "\033[" << (this->x + i) << ";" << (this->y) << "H" << "\u2551";
-			std::cout << "\033[" << (this->x + i) << ";" << (this->y + this->width) << "H" << "\u2551";
-		}
+	std::cout << "\033[" << x+2 << ";" << y+2 << "H ";
 
-	//narysowanie naroznikow
-		// top left
-		std::cout << "\033[" << this->x << ";" << this->y << "H\u2554";
-		// top right
-		std::cout << "\033[" << this->x << ";" << this->y + this->width << "H\u2557";
-		// bot left
-		std::cout << "\033[" << this->x + innerHeight - 1 << ";" << this->y << "H\u2560";
-		// bot right
-		std::cout << "\033[" << this->x + innerHeight - 1 << ";" << this->y + this->width << "H\u2563";
+	std::cout << "\033[" << x+3 << ";" << y+1 << "H ";
+	std::cout << "\033[" << x+3 << ";" << y+3 << "H ";
 
-	//narysowanie "o i x"
-		std::cout << "\033[" << this->block_color << "m";
-		// i
-			std::cout << "\033[" << this->x + 2 << ";" << i_y_posytion << "H ";
-			std::cout << "\033[" << this->x + 4 << ";" << i_y_posytion << "H ";
-			std::cout << "\033[" << this->x + 5 << ";" << i_y_posytion << "H ";
-			std::cout << "\033[" << this->x + 6 << ";" << i_y_posytion << "H ";
-		// o
-			this->draw_o( (this->x + 2), (i_y_posytion - char_between_space - this->char_max_height_width) );
-		// x
-			this->draw_x( (this->x + 2), (i_y_posytion + char_between_space) );
+	std::cout << "\033[" << x+4 << ";" << y+0 << "H ";
+	std::cout << "\033[" << x+4 << ";" << y+4 << "H ";
 }
 void Game::draw_o(int x, int y){
-	// color
-		std::cout << "\033[" << this->block_color << "m";
 
 	std::cout << "\033[" << x+0 << ";" << y+1 << "H ";
 	std::cout << "\033[" << x+0 << ";" << y+2 << "H ";
@@ -150,184 +192,119 @@ void Game::draw_o(int x, int y){
 	std::cout << "\033[" << x+4 << ";" << y+2 << "H ";
 	std::cout << "\033[" << x+4 << ";" << y+3 << "H ";
 }
-void Game::draw_x(int x, int y){
-	// color
-		std::cout << "\033[" << this->block_color << "m";
+void Game::menu(){
 
-	std::cout << "\033[" << x+0 << ";" << y+0 << "H ";
-	std::cout << "\033[" << x+0 << ";" << y+4 << "H ";
+	//czysci menu
+		this->clear_menu();
 
-	std::cout << "\033[" << x+1 << ";" << y+1 << "H ";
-	std::cout << "\033[" << x+1 << ";" << y+3 << "H ";
+	//wypisuje menu
+		cout << "\033[" << this->font_color << "m\033[" << this->menu_x + 1 << ";" << this->menu_y + 1 << "H" << "(" << "\033[" << this->focus_color << ";1m" << "1" << "\033[0m\033[" << this->font_color << "m" << ") Gracz vs Gracz \t[wkrótce]";
+		cout << "\033[" << this->font_color << "m\033[" << this->menu_x + 2 << ";" << this->menu_y + 1 << "H" << "(" << "\033[" << this->focus_color << ";1m" << "2" << "\033[0m\033[" << this->font_color << "m" << ") Gracz vs PC \t[wkrótce]";
+		cout << "\033[" << this->font_color << "m\033[" << this->menu_x + 3 << ";" << this->menu_y + 1 << "H" << "(" << "\033[" << this->focus_color << ";1m" << "3" << "\033[0m\033[" << this->font_color << "m" << ") Statystyki \t[wkrótce]";
 
-	std::cout << "\033[" << x+2 << ";" << y+2 << "H ";
+		cout << "\033[" << this->font_color << "m\033[" << this->menu_x + 5 << ";" << this->menu_y + 1 << "H" << "(" << "\033[" << this->focus_color << ";1m" << "0" << "\033[0m\033[" << this->font_color << "m" << ") Zakończ.";
 
-	std::cout << "\033[" << x+3 << ";" << y+1 << "H ";
-	std::cout << "\033[" << x+3 << ";" << y+3 << "H ";
-
-	std::cout << "\033[" << x+4 << ";" << y+0 << "H ";
-	std::cout << "\033[" << x+4 << ";" << y+4 << "H ";
-}
-void Game::draw_console(int x, int y, std::string title, std::string opc, std::string error){
-
-	int height = 5;
-	//color
-		std::cout << "\033[1;" << this->border_color << "m";
-	//rysuje gore i dol
-		for(int i = 1; i < this->width - this->board_width_heigth; i++){
-			std::cout << "\033[" << x << ";" << y+i << "H\u2550"; 
-			// std::cout << "\033[" << x+height+1 << ";" << y+i << "H\u2550"; 
-		}
-	//rysuje lewo i prawo
-		for(int i = 1; i < height+1; i++){
-			// std::cout << "\033[" << x+i << ";" << y << "H\u2551";
-			std::cout << "\033[" << x+i << ";" << y+this->width - this->board_width_heigth << "H\u2551";
-		}
-	//rysuje rogi
-		//top left
-			std::cout << "\033[" << x << ";" << y << "H\u2560";
-		//top right
-			std::cout << "\033[" << x << ";" << y+this->width-y+2 << "H\u2563";
-		//bot left
-			// std::cout << "\033[" << x+height+1 << ";" << y << "H\u2560";
-		//bot right
-			// std::cout << "\033[" << x+height+1 << ";" << y+this->width-y+2 << "H\u2563";
-	//czysci srodek
-	for(int i = 1; i < this->width - y+2; i++){
-		std::cout << "\033[" << x+1 << ";" << y+i << "H ";
-		std::cout << "\033[" << x+3 << ";" << y+i << "H ";
-		std::cout << "\033[" << x+5 << ";" << y+i << "H ";
+	//pobiera wartosc
+	int res = this->get_usr_inp(3, 0, "Menu", "Opcja", "To musi być liczba z zakresu 0-3");
+	switch(res){
+		case 1: this->game_setup(1); break;
+		case 2: this->game_setup(2); break;
+		case 3: this->show_stat(); break;
 	}
-	std::cout << "\033[1;" << this->border_color << "m";
-	//rysuje separatory
-		for(int i = 1; i < this->width - y+2; i++){
-			std::cout << "\033[" << x+2 << ";" << y+i << "H\u2508";	
-			std::cout << "\033[" << x+4 << ";" << y+i << "H\u2508";	
-		}
-	//Wypisuje nazwy i zostawia kursor w miejsce na wpisanie
-		std::cout << "\033[1;" << this->font_color << "m\033[" << x+1 << ";" << y+2 << "H" << title;
-		std::cout << "\033[1;" << this->font_color << "m\033[" << x+5 << ";" << y+2 << "H" << error;
-		std::cout << "\033[1;" << this->font_color << "m\033[" << x+3 << ";" << y+2 << "H" << opc;
+
 }
-void Game::draw_board(){	
-	int board_inner_width_heigth = 24;
-
-	//color
-		std::cout << "\033[0m";
-		std::cout << "\033[1;" << this->border_color << "m";
-	//rysuje obramowke
-		//lewo prawo
-			for(int i = 0; i < this->board_width_heigth; i++){
-				std::cout << "\033[" << this->menu_top+ i << ";" << this->y << "H\u2551";
-				std::cout << "\033[" << this->menu_top+ i << ";" << this->y + this->board_width_heigth	 << "H\u2551";
-			}
-		//gora dol
-			for(int i = 0; i < this->board_width_heigth; i++){
-				//std::cout << "\033[" << this->menu_top- 1<< ";" << this->y + i<< "H\u2550";
-				std::cout << "\033[" << this->menu_top- 1 + this->board_width_heigth << ";" << this->y + i	 << "H\u2550";
-			}
-		//narozniki + skrzyrzowania
-			std::cout << "\033[" << this->menu_top + this->board_width_heigth - 1 << ";" << this->y << "H\u255A";
-			std::cout << "\033[" << this->menu_top + this->board_width_heigth - 1 << ";" << this->y + this->board_width_heigth << "H\u2569";
-			std::cout << "\033[" << this->menu_top - 1 << ";" << this->y + this->board_width_heigth << "H\u2566";
-	//rysuje separatory
-		//linie
-			for(int i = 0; i < board_inner_width_heigth-1; i++){
-				//poziome
-					std::cout << "\033[" << this->menu_top + this->char_max_height_width + 3 << ";" << this->y + 2+ i << "H\u2500";
-					std::cout << "\033[" << this->menu_top + 2*this->char_max_height_width + 6 << ";" << this->y + 2 + i << "H\u2500";
-				//pionowe
-					std::cout << "\033[" << this->menu_top + 1 + i << ";" << this->y + this->char_max_height_width + 4 << "H\u2502";
-					std::cout << "\033[" << this->menu_top + 1 + i << ";" << this->y + 2*this->char_max_height_width + 7 << "H\u2502";
-			}
-		//skrzyrzowania
-			std::cout << "\033[" << this->menu_top+ this->char_max_height_width + 3 << ";" << this->y + this->char_max_height_width + 4 << "H\u253C";
-			std::cout << "\033[" << this->menu_top+ 2*this->char_max_height_width +6 << ";" << this->y + this->char_max_height_width + 4 << "H\u253C";
-			std::cout << "\033[" << this->menu_top+ this->char_max_height_width + 3 << ";" << this->y + 2*this->char_max_height_width + 7 << "H\u253C";
-			std::cout << "\033[" << this->menu_top+ 2*this->char_max_height_width +6 << ";" << this->y + 2*this->char_max_height_width + 7 << "H\u253C";
-	
-	//rysuje numeracje (a b c / 1 2 3)
-		std::cout << "\033[" << this->font_color << "m";
-		//a b c
-			std::cout << "\033[" << this->menu_top<< ";" << this->y + this->char_max_height_width << "HA";
-			std::cout << "\033[" << this->menu_top<< ";" << this->y + 2*this->char_max_height_width + 3 << "HB";
-			std::cout << "\033[" << this->menu_top<< ";" << this->y + 3*this->char_max_height_width + 6 << "HC";
-			std::cout << "\033[" << this->menu_top+ 3 * this->char_max_height_width + 9 << ";" << this->y + this->char_max_height_width << "HA";
-			std::cout << "\033[" << this->menu_top+ 3 * this->char_max_height_width + 9 << ";" << this->y + 2*this->char_max_height_width + 3 << "HB";
-			std::cout << "\033[" << this->menu_top+ 3 * this->char_max_height_width + 9 << ";" << this->y + 3*this->char_max_height_width + 6 << "HC";
-		//1 2 3
-			std::cout << "\033[" << this->menu_top+ 4 << ";" << this->y + 1 << "H1";
-			std::cout << "\033[" << this->menu_top+ 7 + this->char_max_height_width << ";" << this->y + 1 << "H2";
-			std::cout << "\033[" << this->menu_top+ 10 + 2*this->char_max_height_width << ";" << this->y + 1 << "H3";
-			std::cout << "\033[" << this->menu_top+ 4 << ";" << this->y + 10 + 3*this->char_max_height_width << "H1";
-			std::cout << "\033[" << this->menu_top+ 7 + this->char_max_height_width << ";" << this->y + 10 + 3*this->char_max_height_width << "H2";
-			std::cout << "\033[" << this->menu_top+ 10 + 2*this->char_max_height_width << ";" << this->y + 10 + 3*this->char_max_height_width << "H3";
+void Game::clear_menu(){
+	for(int i = 0; i < 7; i++){
+		for(int j = 0; j < 53; j++){
+			cout << "\033[" << this->menu_x + i << ";" << this->menu_y + j << "H ";
+		}
+	}
 }
-void Game::draw_footer(int x, int y, int inner_width, int inner_height){
+int Game::get_usr_inp(int max, int min, string title, string opc, string error){
 
-	//color
-		std::cout << "\033[0m";
-		std::cout << "\033[1;" << this->border_color << "m";
+	int inp;
 
-	//prawa sciana
-		for(int i = 0; i < inner_height; i++){
-			std::cout << "\033[" << x + i << ";" << y + inner_width << "H\u2551";
-		}
-	//dolna i gorna sciana
-		for(int i = 0; i < inner_width; i++){
-			std::cout << "\033[" << x - 1 << ";" << y + i << "H\u2550";
-			std::cout << "\033[" << x + inner_height << ";" << y + i << "H\u2550";
-		}
-	//narozniki
-		//top left
-			std::cout << "\033[" << x - 1 << ";" << y - 1 << "H\u2560";
-		//top right
-			std::cout << "\033[" << x - 1 << ";" << y + inner_width << "H\u2563";
-		//bot right
-			std::cout << "\033[" << x + inner_height << ";" << y + inner_width << "H\u255D";
+	this->dewa_console(title, opc);
 
-	//wypelnienie
-		for(int i = 0; i < inner_height; i++){
-			for(int j = 0; j < inner_width; j++){
-				std::cout << "\033[" << x + i << ";" << y+j << "H\u2571";
-			}
-		}
-	//by kkukiz
-		std::string txt = " \u00A9 Krzysztof Kukiz ";
-		int txt_dl = txt.length();
+	cin >> inp;
+	while(!cin.good() || inp > max || inp < min){
+		this->dewa_console(title, opc, error);
+		cin.clear();
+		cin.ignore(1024, '\n');
+		cin >> inp;
+	}
 
-		std::cout << "\033[0m";
-		std::cout << "\033[1;" << this->font_color << "m";
-		std::cout << "\033[" << x + (inner_height/2) << ";" << y + (inner_width/2) - (txt_dl/2) << "H" << txt;
-		//gury i dolny padding
-		for(int i = 0; i < txt_dl - 1; i++){
-			std::cout << "\033[" << x + (inner_height/2) - 1<< ";" << y + (inner_width/2) - (txt_dl/2) + i << "H ";
-			std::cout << "\033[" << x + (inner_height/2) + 1<< ";" << y + (inner_width/2) - (txt_dl/2) + i << "H ";
-		}
+	return 1;
 }
-void Game::game_start(int opc){
+void Game::dewa_console(string title, string opc, string error){
 
-	//czysci poprzednia plansze
-		system("clear");
-		std::cout << "\033[2J\033[" << this->x << ";" << this->y << "H";
+	//clear
+		for(int i = 0; i < 53; i++){
+			cout << "\033[" << this->console_x + 0 << ";" << this->console_y + i << "H ";
+			cout << "\033[" << this->console_x + 2 << ";" << this->console_y + i << "H ";
+			cout << "\033[" << this->console_x + 4 << ";" << this->console_y + i << "H ";
+		}
 
-	//tytul
-		this->draw_title();
 
-	//plansza
-		this->draw_board();
+	cout << "\033[0m\033[" << this->font_color << "m";
+	//title
+		cout << "\033[" << this->console_x + 0 << ";" << this->console_y << "H " << title;
 
-	//footer
-		this->draw_footer(this->menu_top+ 8 + 6, 3*this->char_max_height_width + 14);
+	//error
+		if(error.length() > 0)
+			cout << "\033[" << this->console_x + 4 << ";" << this->console_y << "H " << "\033[31;1mError: \033[" << this->font_color << "m" << error;
+
+	//opc
+		cout << "\033[" << this->console_x + 2 << ";" << this->console_y << "H " << opc << ": ";
+		cout << "\033[" << this->focus_color << ";1m";
+
+}
+void Game::game_setup(int typ){
+
+	//czysci menu
+		this->clear_menu();
+
+	//wypisuje menu
+		cout << "\033[" << this->font_color << "m\033[" << this->menu_x + 1 << ";" << this->menu_y + 1 << "H" << "(" << "\033[" << this->focus_color << ";1m" << "1" << "\033[0m\033[" << this->font_color << "m" << ") Zaczyna O \t\t\t[wkrótce]";
+		cout << "\033[" << this->font_color << "m\033[" << this->menu_x + 2 << ";" << this->menu_y + 1 << "H" << "(" << "\033[" << this->focus_color << ";1m" << "2" << "\033[0m\033[" << this->font_color << "m" << ") Zaczyna X \t\t\t[wkrótce]";
+		cout << "\033[" << this->font_color << "m\033[" << this->menu_x + 3 << ";" << this->menu_y + 1 << "H" << "(" << "\033[" << this->focus_color << ";1m" << "3" << "\033[0m\033[" << this->font_color << "m" << ") Zaczyna losowy znak \t[wkrótce]";
+
+		cout << "\033[" << this->font_color << "m\033[" << this->menu_x + 5 << ";" << this->menu_y + 1 << "H" << "(" << "\033[" << this->focus_color << ";1m" << "0" << "\033[0m\033[" << this->font_color << "m" << ") Zakończ.";
+
+	//pobiera wartosc
+	int res = this->get_usr_inp(3, 0, "Game setup", "Opcja", "To musi być liczba z zakresu 0-3");
+	switch(res){
+		case 1: this->game_start(typ, 1); break;
+		case 2: this->game_start(typ, 2); break;
+		case 3: this->game_start(typ, 0); break;
+	}
+
+}
+void Game::game_start(int typ, int first){
+	bool cur_play; // 0 = o; 1 = x
+	bool finished = false;
+	switch(first){
+		case 0: cur_play = rand()%2; break;
+		case 1: cur_play = 0; break;
+		case 2: cur_play = 1; break;
+	}
+
+	while(!finished){
+
+	}
+
+}
+void Game::show_stat(){
 
 }
 
 int main(){
 	setlocale(LC_ALL, "");
+	srand(time(NULL));
 
-	Game game(4, 2);
+	Game game(2, 6);
 
-	std::cout << "\033[60;1H\n";
+	cout << "\033[50;1H";
 
 	return 0;
 }
