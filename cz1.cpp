@@ -22,6 +22,14 @@ class Game{
 			int block_color = 45;
 			int focus_color = 33;
 			// int bg_color = 43;
+			int fields[3][3] = { // 0 = null; 1 = o; 2 = x
+				{0, 0, 0},
+				{0, 0, 0},
+				{0, 0, 0}
+			};
+			int chars_x[3];
+			int chars_y[3];
+			bool in_game = false;
 		// metody
 			void draw_board();
 			void draw_x(int x, int y);
@@ -30,7 +38,9 @@ class Game{
 			void clear_menu();
 			void clear_input();
 			int get_usr_inp(int max = 3, int min = 0, string title = "Menu", string opc = "Opcja", string error = "");
-			void dewa_console(string title = "Menu", string opc = "Opcja", string error = "");
+			int get_usr_field(string title = "Gracz _", string opc = "Pole", string error="");
+			int get_ai_field();
+			void draw_console(string title = "Menu", string opc = "Opcja", string error = "");
 			void game_setup(int typ); // 0 - gracz vs gracz; 1 - gracz vs pc
 			void game_start(int typ, int first = 0); // 0 - losowo; 1 - o; 2 - x;
 			void show_stat();
@@ -46,6 +56,14 @@ Game::Game(int x, int y){
 	this->menu_y = y + 27;
 	this->console_x = x + 17;
 	this->console_y = y + 27;
+
+	this->chars_x[0] = x + 11;
+	this->chars_x[1] = x + 19;
+	this->chars_x[2] = x + 27;
+
+	this->chars_y[0] = y + 3;
+	this->chars_y[1] = y + 11;
+	this->chars_y[2] = y + 19;
 
 	this->draw_board();
 	this->menu();
@@ -159,38 +177,42 @@ void Game::draw_board(){
 }
 void Game::draw_x(int x, int y){
 
-	std::cout << "\033[" << x+0 << ";" << y+0 << "H ";
-	std::cout << "\033[" << x+0 << ";" << y+4 << "H ";
+	cout << "\033[0m\033[" << this->block_color << "m";
 
-	std::cout << "\033[" << x+1 << ";" << y+1 << "H ";
-	std::cout << "\033[" << x+1 << ";" << y+3 << "H ";
+	cout << "\033[" << x+0 << ";" << y+0 << "H ";
+	cout << "\033[" << x+0 << ";" << y+4 << "H ";
 
-	std::cout << "\033[" << x+2 << ";" << y+2 << "H ";
+	cout << "\033[" << x+1 << ";" << y+1 << "H ";
+	cout << "\033[" << x+1 << ";" << y+3 << "H ";
 
-	std::cout << "\033[" << x+3 << ";" << y+1 << "H ";
-	std::cout << "\033[" << x+3 << ";" << y+3 << "H ";
+	cout << "\033[" << x+2 << ";" << y+2 << "H ";
 
-	std::cout << "\033[" << x+4 << ";" << y+0 << "H ";
-	std::cout << "\033[" << x+4 << ";" << y+4 << "H ";
+	cout << "\033[" << x+3 << ";" << y+1 << "H ";
+	cout << "\033[" << x+3 << ";" << y+3 << "H ";
+
+	cout << "\033[" << x+4 << ";" << y+0 << "H ";
+	cout << "\033[" << x+4 << ";" << y+4 << "H ";
 }
 void Game::draw_o(int x, int y){
 
-	std::cout << "\033[" << x+0 << ";" << y+1 << "H ";
-	std::cout << "\033[" << x+0 << ";" << y+2 << "H ";
-	std::cout << "\033[" << x+0 << ";" << y+3 << "H ";
+	cout << "\033[0m\033[" << this->block_color << "m";
 
-	std::cout << "\033[" << x+1 << ";" << y+0 << "H ";
-	std::cout << "\033[" << x+1 << ";" << y+4 << "H ";
+	cout << "\033[" << x+0 << ";" << y+1 << "H ";
+	cout << "\033[" << x+0 << ";" << y+2 << "H ";
+	cout << "\033[" << x+0 << ";" << y+3 << "H ";
 
-	std::cout << "\033[" << x+2 << ";" << y+0 << "H ";
-	std::cout << "\033[" << x+2 << ";" << y+4 << "H ";
+	cout << "\033[" << x+1 << ";" << y+0 << "H ";
+	cout << "\033[" << x+1 << ";" << y+4 << "H ";
 
-	std::cout << "\033[" << x+3 << ";" << y+0 << "H ";
-	std::cout << "\033[" << x+3 << ";" << y+4 << "H ";
+	cout << "\033[" << x+2 << ";" << y+0 << "H ";
+	cout << "\033[" << x+2 << ";" << y+4 << "H ";
 
-	std::cout << "\033[" << x+4 << ";" << y+1 << "H ";
-	std::cout << "\033[" << x+4 << ";" << y+2 << "H ";
-	std::cout << "\033[" << x+4 << ";" << y+3 << "H ";
+	cout << "\033[" << x+3 << ";" << y+0 << "H ";
+	cout << "\033[" << x+3 << ";" << y+4 << "H ";
+
+	cout << "\033[" << x+4 << ";" << y+1 << "H ";
+	cout << "\033[" << x+4 << ";" << y+2 << "H ";
+	cout << "\033[" << x+4 << ";" << y+3 << "H ";
 }
 void Game::menu(){
 
@@ -214,6 +236,7 @@ void Game::menu(){
 
 }
 void Game::clear_menu(){
+	cout << "\033[0m";
 	for(int i = 0; i < 7; i++){
 		for(int j = 0; j < 53; j++){
 			cout << "\033[" << this->menu_x + i << ";" << this->menu_y + j << "H ";
@@ -224,19 +247,19 @@ int Game::get_usr_inp(int max, int min, string title, string opc, string error){
 
 	int inp;
 
-	this->dewa_console(title, opc);
+	this->draw_console(title, opc);
 
 	cin >> inp;
 	while(!cin.good() || inp > max || inp < min){
-		this->dewa_console(title, opc, error);
+		this->draw_console(title, opc, error);
 		cin.clear();
 		cin.ignore(1024, '\n');
 		cin >> inp;
 	}
 
-	return 1;
+	return inp;
 }
-void Game::dewa_console(string title, string opc, string error){
+void Game::draw_console(string title, string opc, string error){
 
 	//clear
 		for(int i = 0; i < 53; i++){
@@ -244,7 +267,6 @@ void Game::dewa_console(string title, string opc, string error){
 			cout << "\033[" << this->console_x + 2 << ";" << this->console_y + i << "H ";
 			cout << "\033[" << this->console_x + 4 << ";" << this->console_y + i << "H ";
 		}
-
 
 	cout << "\033[0m\033[" << this->font_color << "m";
 	//title
@@ -265,8 +287,8 @@ void Game::game_setup(int typ){
 		this->clear_menu();
 
 	//wypisuje menu
-		cout << "\033[" << this->font_color << "m\033[" << this->menu_x + 1 << ";" << this->menu_y + 1 << "H" << "(" << "\033[" << this->focus_color << ";1m" << "1" << "\033[0m\033[" << this->font_color << "m" << ") Zaczyna O \t\t\t[wkrótce]";
-		cout << "\033[" << this->font_color << "m\033[" << this->menu_x + 2 << ";" << this->menu_y + 1 << "H" << "(" << "\033[" << this->focus_color << ";1m" << "2" << "\033[0m\033[" << this->font_color << "m" << ") Zaczyna X \t\t\t[wkrótce]";
+		cout << "\033[" << this->font_color << "m\033[" << this->menu_x + 1 << ";" << this->menu_y + 1 << "H" << "(" << "\033[" << this->focus_color << ";1m" << "1" << "\033[0m\033[" << this->font_color << "m" << ") Zaczyna O \t\t[wkrótce]";
+		cout << "\033[" << this->font_color << "m\033[" << this->menu_x + 2 << ";" << this->menu_y + 1 << "H" << "(" << "\033[" << this->focus_color << ";1m" << "2" << "\033[0m\033[" << this->font_color << "m" << ") Zaczyna X \t\t[wkrótce]";
 		cout << "\033[" << this->font_color << "m\033[" << this->menu_x + 3 << ";" << this->menu_y + 1 << "H" << "(" << "\033[" << this->focus_color << ";1m" << "3" << "\033[0m\033[" << this->font_color << "m" << ") Zaczyna losowy znak \t[wkrótce]";
 
 		cout << "\033[" << this->font_color << "m\033[" << this->menu_x + 5 << ";" << this->menu_y + 1 << "H" << "(" << "\033[" << this->focus_color << ";1m" << "0" << "\033[0m\033[" << this->font_color << "m" << ") Zakończ.";
@@ -281,17 +303,151 @@ void Game::game_setup(int typ){
 
 }
 void Game::game_start(int typ, int first){
-	bool cur_play; // 0 = o; 1 = x
-	bool finished = false;
+	int cur_play; 	//1 = o; 2 = x
+	int abc;
+	int fst; //(1 2 3)
+	int i_tmp;
+	string s_tmp;
 	switch(first){
-		case 0: cur_play = rand()%2; break;
-		case 1: cur_play = 0; break;
-		case 2: cur_play = 1; break;
+		case 0: cur_play = rand()%2 + 1; break;
+		case 1: cur_play = 1; break;
+		case 2: cur_play = 2; break;
+		default: cur_play = rand()%2 + 1; break;
+	}
+	//zeruje pola
+	for(int i = 0; i < 3; i++)
+		for(int j = 0; j < 3; j++)
+			this->fields[i][j] = 0;
+
+	this->in_game = true;
+	while(this->in_game){
+
+		//wydrukuj info kto jest aktualnym graczem
+			this->clear_menu();
+
+			cout << "\033[" << this->menu_x + 4 << ";" << this->menu_y + 1 << "H\033[0m" << "Wybierz Pole (np. \033[" << this->focus_color <<";1m1B\033[0m lub \033[" << this->focus_color <<";1mc3\033[0m)";
+			// cout << "\033[" << this->menu_x + 5 << ";" << this->menu_y + 1 << "H\033[2m" << "Żeby anulować gre napisz \"exit\".";
+
+			if(cur_play == 1){	//o
+				i_tmp = this->get_usr_field("Gracz O", "Pole");
+			}else{				//x
+				if(typ == 1){	// gracz vs gracz
+					i_tmp = this->get_usr_field("Gracz X", "Pole");
+				}else{			//gracz vs pc
+					// i_tmp = this->get_ai_field();
+				}
+			}
+			abc = i_tmp / 10;
+			fst = i_tmp % 10;
+			this->fields[fst-1][abc-1] = cur_play;
+			cout << "\033[1;1H" << abc;
+			cout << "\033[2;1H" << fst;
+			if(cur_play == 1){
+				this->draw_o(this->chars_x[fst-1], this->chars_y[abc-1]);
+			}else{
+				this->draw_x(this->chars_x[fst-1], this->chars_y[abc-1]);
+			}
+
+
+
+		cur_play = cur_play == 1 ? 2 : 1;	//zmiana x -> o, lub o -> x
 	}
 
-	while(!finished){
+}
+int Game::get_usr_field(string title, string opc, string error){
 
-	}
+	string usr_inp;
+	int abc;
+	int fst;
+	
+	//konsola
+		draw_console(title, opc, error);
+
+	//pobiera od uzytkownika stringa
+		cin >> usr_inp;
+
+	//czy jest to exit
+	// if( usr_inp == "exit" ){
+	// 	this->in_game = false;
+	// 	return 0;
+	// }
+
+	//czy sa tylko dwa znaki
+	if(usr_inp.length() != 2)
+		return this->get_usr_field(title, opc, "Nieprawidłowa liczba znaków!");
+	
+
+	//czy jest poprawny format: A1, 1A - C3, 3C.  NIE: AA, 11, CC, 33
+		//czy sa tylko dozwolone znaki
+			for(int i = 0; i < 2; i++){
+				switch(usr_inp[i]){
+					case '1': case '2': case '3':
+					case 'a': case 'b': case 'c':
+					case 'A': case 'B': case 'C':
+					break;
+					default: return this->get_usr_field(title, opc, "Niedozwolony znak! (tylko A,B,C,1,2,3)");
+				}
+			}
+		//ile jest cyfr w opcji (ma byc tylko jedna)
+			int ile_cyfr = 0;
+			for(int i = 0; i < 2; i++){
+				switch(usr_inp[i]){
+					case '1': case '2': case '3':
+					ile_cyfr++;
+					break;
+				}
+			}
+		//jesli inna cyfr niz 1 to od nowa pobiera wartosc
+			if(ile_cyfr != 1)
+				return this->get_usr_field(title, opc, "Musi być jedna cyfra, i jedna litera!");
+
+	//przekstałcenie formatu na int (a-c = 10-30; 1-3 = 1-3)
+		//gdzie jest liczba, gdie litera
+			int miejsce_cyfry;
+			int miejsce_litery;
+			switch(usr_inp[0]){
+				case '1': case '2': case '3':
+					miejsce_cyfry = 0;
+					miejsce_litery = 1;
+					break;
+				default:
+					miejsce_cyfry = 1;
+					miejsce_litery = 0;
+			}
+		//transformuje na wyjsciowy format
+
+			switch(usr_inp[miejsce_litery]){
+				case 'a':
+				case 'A':
+					abc = 1;
+					break;
+				case 'b':
+				case 'B':
+					abc = 2;
+					break;
+				case 'c':
+				case 'C':
+					abc = 3;
+					break;
+			}
+			switch(usr_inp[miejsce_cyfry]){
+				case '1':
+					fst = 1;
+					break;
+				case '2':
+					fst = 2;
+					break;
+				case '3':
+					fst = 3;
+					break;
+			}
+	//czy pole nie jest zajete
+		if(this->fields[fst-1][abc-1] != 0) return this->get_usr_field(title, opc, "Pole już zajęte!");
+
+	return abc*10 + fst;
+
+}
+int Game::get_ai_field(){
 
 }
 void Game::show_stat(){
@@ -302,7 +458,7 @@ int main(){
 	setlocale(LC_ALL, "");
 	srand(time(NULL));
 
-	Game game(2, 6);
+	Game game(8, 48);
 
 	cout << "\033[50;1H";
 
