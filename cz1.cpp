@@ -44,6 +44,7 @@ class Game{
 			void game_setup(int typ); // 0 - gracz vs gracz; 1 - gracz vs pc
 			void game_start(int typ, int first = 0); // 0 - losowo; 1 - o; 2 - x;
 			void show_stat();
+			int end_game(); // 0 - false; 1 - o wins; 2 - x wins; 3 - draw
 	public:
 		Game(int x = 1, int y = 1);
 		~Game();
@@ -307,6 +308,7 @@ void Game::game_start(int typ, int first){
 	int abc;
 	int fst; //(1 2 3)
 	int i_tmp;
+	int i_end_game;
 	string s_tmp;
 	switch(first){
 		case 0: cur_play = rand()%2 + 1; break;
@@ -321,7 +323,6 @@ void Game::game_start(int typ, int first){
 
 	this->in_game = true;
 	while(this->in_game){
-
 		//wydrukuj info kto jest aktualnym graczem
 			this->clear_menu();
 
@@ -340,18 +341,34 @@ void Game::game_start(int typ, int first){
 			abc = i_tmp / 10;
 			fst = i_tmp % 10;
 			this->fields[fst-1][abc-1] = cur_play;
-			cout << "\033[1;1H" << abc;
-			cout << "\033[2;1H" << fst;
 			if(cur_play == 1){
 				this->draw_o(this->chars_x[fst-1], this->chars_y[abc-1]);
 			}else{
 				this->draw_x(this->chars_x[fst-1], this->chars_y[abc-1]);
 			}
 
+		//czy koniec gry
+			i_end_game = end_game();
+			if( i_end_game ) this->in_game = false;
 
-
-		cur_play = cur_play == 1 ? 2 : 1;	//zmiana x -> o, lub o -> x
+		//zmiana x -> o, lub o -> x
+			cur_play = cur_play == 1 ? 2 : 1;
 	}
+
+	//wyswietla kto wygral
+		string end_msg;
+		switch(i_end_game){
+			case 1: end_msg = "Wygrało: O"; break;
+			case 2: end_msg = "Wygrało: X"; break;
+			case 3: end_msg = "Remis"; 		break;
+		}
+		this->clear_menu();
+
+		cout << "\033[" << this->menu_x + 3 << ";" << this->menu_y + 1 << "H\033[0m" << end_msg;
+		cout << "\033[" << this->menu_x + 5 << ";" << this->menu_y + 1 << "H\033[2m" << "Naciśnij Enter by wrucić do menu.";
+
+	//nacisnij enter by wrucic do menu
+
 
 }
 int Game::get_usr_field(string title, string opc, string error){
@@ -448,6 +465,32 @@ int Game::get_usr_field(string title, string opc, string error){
 
 }
 int Game::get_ai_field(){
+
+}
+int Game::end_game(){ // 0 - false; 1 - o wins; 2 - x wins; 3 - draw
+	//czy ktos ma 3 w lini
+		for(int i = 0; i < 3; i++){
+		//pionowe
+			if( this->fields[0][i] == this->fields[1][i] && this->fields[1][i] == this->fields[2][i] && this->fields[1][i] != 0) 	return this->fields[0][i];
+		//poziome
+			if( this->fields[i][0] == this->fields[i][1] && this->fields[i][1] == this->fields[i][2] && this->fields[i][1] != 0) 	return this->fields[i][0];
+		}
+		//ukosy
+			if( this->fields[0][0] == this->fields[1][1] && this->fields[1][1] == this->fields[2][2] && this->fields[1][1] != 0 ) 	return this->fields[1][1];
+			if( this->fields[0][2] == this->fields[1][1] && this->fields[1][1] == this->fields[2][0] && this->fields[1][1] != 0 ) 	return this->fields[1][1];
+
+	//czy sa wolne pola
+		bool is_0 = false;
+		for(int i = 0; i < 3; i++){
+			for(int j = 0; j < 3; j++){
+				if( this->fields[i][j] == 0 ){
+					is_0 = true;
+					break;
+				}
+			}
+		}
+		if(!is_0) 	return 3;
+		else		return 0;
 
 }
 void Game::show_stat(){
