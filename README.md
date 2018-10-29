@@ -3,10 +3,10 @@
 ## Przewidziane cehy
 
 * Tryby gry
-	* [ ] Gracz vs Gracz
+	* [x] Gracz vs Gracz
 	* [ ] Gracz vs PC
 * Interface
-	* [ ] na Wpisywanie w konsoli
+	* [x] na Wpisywanie w konsoli
 	* [ ] na klikanie myszą (?)
 
 ## Menu
