@@ -221,18 +221,16 @@ void Game::menu(){
 		this->clear_menu();
 
 	//wypisuje menu
-		cout << "\033[" << this->font_color << "m\033[" << this->menu_x + 1 << ";" << this->menu_y + 1 << "H" << "(" << "\033[" << this->focus_color << ";1m" << "1" << "\033[0m\033[" << this->font_color << "m" << ") Gracz vs Gracz \t[wkrótce]";
-		cout << "\033[" << this->font_color << "m\033[" << this->menu_x + 2 << ";" << this->menu_y + 1 << "H" << "(" << "\033[" << this->focus_color << ";1m" << "2" << "\033[0m\033[" << this->font_color << "m" << ") Gracz vs PC \t[wkrótce]";
-		cout << "\033[" << this->font_color << "m\033[" << this->menu_x + 3 << ";" << this->menu_y + 1 << "H" << "(" << "\033[" << this->focus_color << ";1m" << "3" << "\033[0m\033[" << this->font_color << "m" << ") Statystyki \t[wkrótce]";
+		cout << "\033[" << this->font_color << "m\033[" << this->menu_x + 1 << ";" << this->menu_y + 1 << "H" << "(" << "\033[" << this->focus_color << ";1m" << "1" << "\033[0m\033[" << this->font_color << "m" << ") Gracz vs Gracz";
+		cout << "\033[" << this->font_color << "m\033[" << this->menu_x + 2 << ";" << this->menu_y + 1 << "H" << "(" << "\033[" << this->focus_color << ";1m" << "2" << "\033[0m\033[" << this->font_color << "m" << ") Gracz vs PC";
 
 		cout << "\033[" << this->font_color << "m\033[" << this->menu_x + 5 << ";" << this->menu_y + 1 << "H" << "(" << "\033[" << this->focus_color << ";1m" << "0" << "\033[0m\033[" << this->font_color << "m" << ") Zakończ.";
 
 	//pobiera wartosc
-	int res = this->get_usr_inp(3, 0, "Menu", "Opcja", "To musi być liczba z zakresu 0-3");
+	int res = this->get_usr_inp(2, 0, "Menu", "Opcja", "To musi być liczba z zakresu 0-3");
 	switch(res){
 		case 1: this->game_setup(1); break;
 		case 2: this->game_setup(2); break;
-		case 3: this->show_stat(); break;
 	}
 
 }
@@ -288,9 +286,9 @@ void Game::game_setup(int typ){
 		this->clear_menu();
 
 	//wypisuje menu
-		cout << "\033[" << this->font_color << "m\033[" << this->menu_x + 1 << ";" << this->menu_y + 1 << "H" << "(" << "\033[" << this->focus_color << ";1m" << "1" << "\033[0m\033[" << this->font_color << "m" << ") Zaczyna O \t\t[wkrótce]";
-		cout << "\033[" << this->font_color << "m\033[" << this->menu_x + 2 << ";" << this->menu_y + 1 << "H" << "(" << "\033[" << this->focus_color << ";1m" << "2" << "\033[0m\033[" << this->font_color << "m" << ") Zaczyna X \t\t[wkrótce]";
-		cout << "\033[" << this->font_color << "m\033[" << this->menu_x + 3 << ";" << this->menu_y + 1 << "H" << "(" << "\033[" << this->focus_color << ";1m" << "3" << "\033[0m\033[" << this->font_color << "m" << ") Zaczyna losowy znak \t[wkrótce]";
+		cout << "\033[" << this->font_color << "m\033[" << this->menu_x + 1 << ";" << this->menu_y + 1 << "H" << "(" << "\033[" << this->focus_color << ";1m" << "1" << "\033[0m\033[" << this->font_color << "m" << ") Zaczyna O";
+		cout << "\033[" << this->font_color << "m\033[" << this->menu_x + 2 << ";" << this->menu_y + 1 << "H" << "(" << "\033[" << this->focus_color << ";1m" << "2" << "\033[0m\033[" << this->font_color << "m" << ") Zaczyna X";
+		cout << "\033[" << this->font_color << "m\033[" << this->menu_x + 3 << ";" << this->menu_y + 1 << "H" << "(" << "\033[" << this->focus_color << ";1m" << "3" << "\033[0m\033[" << this->font_color << "m" << ") Zaczyna losowy znak";
 
 		cout << "\033[" << this->font_color << "m\033[" << this->menu_x + 5 << ";" << this->menu_y + 1 << "H" << "(" << "\033[" << this->focus_color << ";1m" << "0" << "\033[0m\033[" << this->font_color << "m" << ") Zakończ.";
 
@@ -326,8 +324,8 @@ void Game::game_start(int typ, int first){
 		//wydrukuj info kto jest aktualnym graczem
 			this->clear_menu();
 
-			cout << "\033[" << this->menu_x + 4 << ";" << this->menu_y + 1 << "H\033[0m" << "Wybierz Pole (np. \033[" << this->focus_color <<";1m1B\033[0m lub \033[" << this->focus_color <<";1mc3\033[0m)";
-			// cout << "\033[" << this->menu_x + 5 << ";" << this->menu_y + 1 << "H\033[2m" << "Żeby anulować gre napisz \"exit\".";
+			cout << "\033[" << this->menu_x + 3 << ";" << this->menu_y + 1 << "H\033[0m" << "Wybierz Pole (np. \033[" << this->focus_color <<";1m1B\033[0m lub \033[" << this->focus_color <<";1mc3\033[0m)";
+			// cout << "\033[" << this->menu_x + 4 << ";" << this->menu_y + 1 << "H\033[2m" << "Żeby anulować gre napisz \"exit\".";
 
 			if(cur_play == 1){	//o
 				i_tmp = this->get_usr_field("Gracz O", "Pole");
@@ -335,7 +333,7 @@ void Game::game_start(int typ, int first){
 				if(typ == 1){	// gracz vs gracz
 					i_tmp = this->get_usr_field("Gracz X", "Pole");
 				}else{			//gracz vs pc
-					// i_tmp = this->get_ai_field();
+					i_tmp = this->get_ai_field();
 				}
 			}
 			abc = i_tmp / 10;
@@ -358,18 +356,21 @@ void Game::game_start(int typ, int first){
 	//wyswietla kto wygral
 		string end_msg;
 		switch(i_end_game){
-			case 1: end_msg = "Wygrało: O"; break;
-			case 2: end_msg = "Wygrało: X"; break;
+			case 1: end_msg = "Wygrało: \033[1;" + to_string(this->focus_color) + "mO"; break;
+			case 2: end_msg = "Wygrało: \033[1;" + to_string(this->focus_color) + "mX"; break;
 			case 3: end_msg = "Remis"; 		break;
 		}
 		this->clear_menu();
 
 		cout << "\033[" << this->menu_x + 3 << ";" << this->menu_y + 1 << "H\033[0m" << end_msg;
-		cout << "\033[" << this->menu_x + 5 << ";" << this->menu_y + 1 << "H\033[2m" << "Naciśnij Enter by wrucić do menu.";
+		// cout << "\033[" << this->menu_x + 5 << ";" << this->menu_y + 1 << "H\033[2mNaciśnij Enter by wrucić do menu.";
 
 	//nacisnij enter by wrucic do menu
-
-
+		this->draw_console("", "\033[2mNaciśnij Enter by wrucić do menu", "");
+		cin.get();
+		cin.get();
+		this->draw_board();
+		this->menu();
 }
 int Game::get_usr_field(string title, string opc, string error){
 
@@ -465,7 +466,10 @@ int Game::get_usr_field(string title, string opc, string error){
 
 }
 int Game::get_ai_field(){
-
+	int abc = rand()%3+1;
+	int fst = rand()%3+1;
+	if(this->fields[fst-1][abc-1] != 0) return this->get_ai_field();
+	else return abc*10 + fst;
 }
 int Game::end_game(){ // 0 - false; 1 - o wins; 2 - x wins; 3 - draw
 	//czy ktos ma 3 w lini
@@ -491,9 +495,6 @@ int Game::end_game(){ // 0 - false; 1 - o wins; 2 - x wins; 3 - draw
 		}
 		if(!is_0) 	return 3;
 		else		return 0;
-
-}
-void Game::show_stat(){
 
 }
 
