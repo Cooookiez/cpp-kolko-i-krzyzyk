@@ -499,10 +499,10 @@ int Game::end_game(){ // 0 - false; 1 - o wins; 2 - x wins; 3 - draw
 }
 
 int main(){
-	setlocale(LC_ALL, "");
+	setlocale(LC_ALL, ""); // ustawienie polskich zankow
 	srand(time(NULL));
 
-	Game game(8, 48);
+	Game game(4, 4);
 
 	cout << "\033[50;1H";
 
