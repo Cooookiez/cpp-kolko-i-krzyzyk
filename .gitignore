@@ -4,3 +4,5 @@
 *.swp
 
 cz1\.bg\.cpp
+
+.DS_Store

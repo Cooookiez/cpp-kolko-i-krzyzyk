@@ -1,17 +1,9 @@
 # c++ Kółko i Krzyżyk
 
-## Przewidziane cehy
+![kolko-krzyzyk.gif](./kolko-krzyzyk.gif)
 
-* Tryby gry
-	* [x] Gracz vs Gracz
-	* [ ] Gracz vs PC
-* Interface
-	* [x] na Wpisywanie w konsoli
-	* [ ] na klikanie myszą (?)
+# Cechy gry
 
-## Menu
-
-* Gracz vs Gracz
-* Gracz vs PC
-* Statystyki
-* Wyjdź
+- Poprawne jest wpisanie: a1, 1a, A1, 1A – wszytkie zadziałają tak samo
+- Gracz vs Gracz
+- Gracz vs PC (PC rusza się kompletnie losowo)
